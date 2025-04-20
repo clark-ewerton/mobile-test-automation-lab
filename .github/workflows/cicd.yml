@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: appium/appium:latest
-      options: --privileged
+      options: --user root
 
     steps:
       - name: Checkout code
