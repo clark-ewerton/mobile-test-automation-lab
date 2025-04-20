@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 2
     container:
       image: appium/appium:latest
-      options: --privileged -v /dev/kvm:/dev/kvm
+      options: --user root -v /dev/kvm:/dev/kvm
 
     steps:
       - name: Checkout code
