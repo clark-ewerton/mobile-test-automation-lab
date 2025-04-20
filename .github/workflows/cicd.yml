@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: appium/appium:latest
-      options: --user root
+      options: --user root --device /dev/kvm
 
     steps:
       - name: Checkout code
@@ -31,13 +31,19 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: adb devices
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -qemu -enable-kvm
+          script: 
+            adb wait-for-device
+            adb shell getprop sys.boot_completed | grep 1
+
+      - name: Verify Emulator
+        run: |
+          adb devices
+          adb shell getprop ro.build.version.release
 
       - name: Install APK
         run: |
-          adb wait-for-device
-          adb install ./app/googleCalculator.apk  # APK precisa estar no repositório
+          adb install -t -g ./app/googleCalculator.apk
           adb shell pm list packages | grep calculator
 
       - name: Run Tests
