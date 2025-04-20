@@ -54,7 +54,7 @@ jobs:
       - name: Execute Android test suite
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 26
           script: mvn clean test -Pandroid,qa
       
       - name: Archive test reports
