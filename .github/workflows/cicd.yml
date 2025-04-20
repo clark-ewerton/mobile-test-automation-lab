@@ -19,12 +19,19 @@ jobs:
           java-version: 17
           distribution: 'adopt'
 
+      - name: Initialize ADB
+        run: |
+          adb kill-server
+          adb start-server
+          echo "ADB Version:"
+          adb version
+
       - name: Start Emulator with Retry
         id: emulator
         uses: reactivecircus/android-emulator-runner@v2
         continue-on-error: true
         with:
-          api-level: 30
+          api-level: 31
           arch: x86_64
           profile: Nexus 6
           disable-animations: true
@@ -37,16 +44,22 @@ jobs:
             -camera-back none
             -no-metrics
           script: |
-            echo "Starting ADB server..."
-            adb start-server
-            echo "Waiting for device..."
+            echo "=== EMULATOR STARTUP SEQUENCE ==="
+            echo "Initializing ADB connection..."
+            adb reconnect offline
             adb wait-for-device
-            echo "Checking boot status..."
-            until adb shell getprop sys.boot_completed | grep -q "1"; do
+            echo "Waiting for full boot..."
+            for i in {1..30}; do
+              if adb shell getprop sys.boot_completed | grep -q "1"; then
+                echo "Emulator fully booted!"
+                exit 0
+              fi
               sleep 5
-              echo "Waiting for boot completion..."
+              echo "Boot in progress... Attempt $i/30"
+              adb reconnect device 2>/dev/null
             done
-            echo "Emulator ready!"
+            echo "Error: Emulator failed to boot within timeout"
+            exit 1
 
       - name: Verify Emulator Connection
         if: steps.emulator.outcome == 'success'
