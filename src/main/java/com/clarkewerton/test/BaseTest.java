@@ -33,11 +33,14 @@ import org.testng.*;
 public class BaseTest {
 
     protected AppiumDriver driver;
+	private boolean isSauceLabsExecution;
 
  @BeforeClass(alwaysRun = true)
- @Parameters({"platform", "udid", "platformVersion","env"})
+ @Parameters({"platform", "udid", "platformVersion", "env"})
     public void preCondition(String platform, String udid, String platformVersion, String env) {
             driver = new DriverFactory().createInstance(platform, udid, platformVersion, env);
+			isSauceLabsExecution = env != null && env.equals("cloud"); 
+
     }
 	
     @AfterClass(alwaysRun = true)
@@ -49,7 +52,7 @@ public class BaseTest {
 	
 		@AfterMethod(alwaysRun = true)
     public void reportTestStatus(ITestResult result) {
-        if (driver != null) {
+        if (driver != null && isSauceLabsExecution) {
             String status = result.getStatus() == ITestResult.SUCCESS ? "passed" : "failed";
             try {
                 driver.executeScript("sauce:job-result=" + status);
