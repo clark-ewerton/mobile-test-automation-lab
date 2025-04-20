@@ -38,15 +38,9 @@ jobs:
             adb wait-for-device
             adb shell input keyevent 82
             adb devices
-
-      - name: Install APK
-        run: |
-          adb wait-for-device
-          adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
-          adb shell pm list packages | grep calculator
-
-      - name: Run Tests
-        run: mvn test -DdeviceName=emulator-5554
+            adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
+            adb shell pm list packages | grep calculator
+            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
 
       - name: Load test report history
         uses: actions/checkout@v3
