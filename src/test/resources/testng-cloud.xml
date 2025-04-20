@@ -1,0 +1,36 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Suite">
+
+<!-- configs below to run in cloud sauce labs -->
+
+   <!--<test name="Iphone">
+        <parameter name="platform" value="android"/>
+        <parameter name="udid" value="Google Pixel 7a GoogleAPI Emulator"/>
+        <parameter name="platformVersion" value="13"/>
+		<parameter name="env" value="cloud"/>
+        <classes>
+            <class name="com.clarkewerton.ios.CalculatorTest"/>
+        </classes>
+    </test>-->
+	
+    <test name="GooglePixel7">
+        <parameter name="platform" value="android"/>
+        <parameter name="udid" value="Google Pixel 7a GoogleAPI Emulator"/>
+        <parameter name="platformVersion" value="13"/>
+		<parameter name="env" value="cloud"/>
+        <classes>
+            <class name="com.clarkewerton.android.CalculatorTest"/>
+        </classes>
+    </test>
+	
+	    <test name="GooglePixel8">
+        <parameter name="platform" value="android"/>
+        <parameter name="udid" value="Google Pixel 8 Pro GoogleAPI Emulator"/>
+        <parameter name="platformVersion" value="13"/>
+				<parameter name="env" value="cloud"/>
+        <classes>
+            <class name="com.clarkewerton.android.CalculatorTest"/>
+        </classes>
+    </test>
+</suite>

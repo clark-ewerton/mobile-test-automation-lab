@@ -1,0 +1,8 @@
+# Maven  
+target/  
+**.target/  
+
+# Allure  
+.allure/  
+allure-results/  
+allure-report/  
