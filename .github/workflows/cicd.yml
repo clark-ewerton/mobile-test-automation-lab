@@ -1,68 +1,65 @@
-# GitHub Actions Workflow for Appium Java Android Application Automation
+name: run android tests in github runner
 
-# This GitHub Actions workflow is designed to build a Maven project and execute Appium tests using an Android mobile device.
-# The automation project utilizes TestNG, Appium, Maven, and Java as its core technologies.
-
-# For more details on building and testing Java projects with Maven using GitHub Actions, please refer to the official documentation:
-# https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Appium Java Android Application Automation CI
-
-on:
-  push:
-    branches:
-      - '**'
-  pull_request:
-    branches:
-      - '**'
+on: push
 
 jobs:
-  build:
-    runs-on: macos-latest
-    
+  run-mobile-tests:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Java
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: setup java
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
           distribution: 'temurin'
-          
-      - name: Setup NodeJS  
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+          java-version: '17'
 
-  test:
-    runs-on: macos-latest
-    needs: build
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install Appium server and Appium android driver  
+      - name: pull the project in to the runner
+        uses: actions/checkout@v4
+
+      - name: setup appium
         run: |
-          npm install -g appium@next
+          npm install -g appium
           appium -v
+          appium driver list --installed
           appium driver install uiautomator2
-          
-      - name: Start Appium server
-        run: |
-          appium &>/dev/null &
-    
-      - name: Execute Android test suite
+
+      - name: start android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 26
-          arch: arm64-v8a
-          profile: Nexus 6
-          force-avd-creation: true
-          script: mvn clean test -Pandroid,qa
-      
-      - name: Archive test reports
+          api-level: 25
+          target: google_apis
+          arch: x86_64
+          script: |
+            adb wait-for-device
+            adb shell input keyevent 82
+            adb devices
+            mvn clean test
+
+      - name: Load test report history
+        uses: actions/checkout@v3
         if: always()
-        uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
-          name: test-reports
-          path: reports
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: allure-results
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
