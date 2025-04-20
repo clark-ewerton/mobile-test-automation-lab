@@ -1,13 +1,22 @@
 name: Appium Test with APK
 on: [push]
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: appium/appium
+    container:
+      image: appium/appium:latest
+      options: --privileged
 
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -24,6 +33,7 @@ jobs:
         run: |
           adb wait-for-device
           adb install ./app/googleCalculator.apk  # APK precisa estar no repositório
+          adb shell pm list packages | grep calculator
 
       - name: Run Tests
         run: mvn test -DdeviceName=emulator-5554
