@@ -42,9 +42,16 @@ jobs:
             -enable-kvm 
             -metrics-collection 
             -no-metrics
-          script: 
+          script: |
+            # Wait for emulator to start
+            echo "Waiting for emulator to boot..."
             adb wait-for-device
-            while ! adb shell getprop sys.boot_completed | grep -q 1; do sleep 1; done
+            echo "Device found, waiting for boot completion..."
+            while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
+              sleep 5
+              echo "Still waiting for boot..."
+            done
+            echo "Emulator fully booted!"
 
       - name: Verify Emulator
         run: |
