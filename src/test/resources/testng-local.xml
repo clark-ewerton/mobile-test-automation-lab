@@ -5,7 +5,7 @@
 <!-- configs below to run in local -->
     <test name="RedmiNote13">
         <parameter name="platform" value="android"/>
-        <parameter name="udid" value="dcf1741e"/>
+        <parameter name="udid" value="emulator-5554"/>
         <parameter name="platformVersion" value="13"/>
 		<parameter name="env" value="local"/>
         <classes>
