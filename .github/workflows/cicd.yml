@@ -48,32 +48,22 @@ jobs:
             mvn verify -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml allure:report
 
             # Cópia DIRETA para artifacts
-            mkdir -p ./artifacts/allure-report
-            cp -R ./target/site/allure-maven-plugin/* ./artifacts/allure-report/
-            ls -R ./artifacts/allure-report  # Debug
+            mkdir -p ./public
+            cp -R ./target/site/allure-maven-plugin/* ./public/
+            ls -R ./public/  # Debug
+            echo "BASE_HREF=/your-repo-name/" > ./public/.env
     
       - name: Upload Allure report artifact
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: ./artifacts/allure-report/
+          path: ./public/
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: allure-report
           path: ./
-
-      - name: Copy artifacts
-        run: |
-          mkdir -p ./public/artifacts/
-
-          echo "Copy allure folders and paste it into one folder"
-          ls -R ./artifacts/allure-report/ || true
-          cp -R ./artifacts/allure-report/* ./public/artifacts/allure-report/
-
-          echo "Content of ./artifacts/allure-report/ after copy"
-          ls -R ./public/artifacts/allure-report/ || true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
