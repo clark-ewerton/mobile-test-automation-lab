@@ -64,20 +64,15 @@ jobs:
           name: allure-report
           path: ./
 
-      - name: Verifies content of files after download
-        run: |
-          echo "Listing downloaded files:"
-          ls -R ./artifacts/allure-report/
-
       - name: Copy artifacts
         run: |
           mkdir -p ./public/artifacts/
 
-          echo "Copy mp4 videos and paste it into one folder"
+          echo "Copy allure folders and paste it into one folder"
           ls -R ./artifacts/allure-report/ || true
-          find ./artifacts/allure-report/ -name "*.mp4" -exec cp {} ./public/artifacts/allure-report/ \;
+          cp -R ./artifacts/allure-report/* ./public/artifacts/allure-report/
 
-          echo "Content of ./public/videos after copy"
+          echo "Content of ./artifacts/allure-report/ after copy"
           ls -R ./public/artifacts/allure-report/ || true
 
       - name: Deploy to GitHub Pages
