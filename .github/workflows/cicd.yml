@@ -1,8 +1,8 @@
-name: Appium Android Test
+name: Appium CICD Test
 on: [push, pull_request]
 
 jobs:
-  run-mobile-tests:
+  run-android-tests:
     runs-on: ubuntu-latest
     outputs:
       maven_tests: ${{ steps.maven_tests.outcome }}
@@ -25,27 +25,18 @@ jobs:
 
       - name: Setup Appium (run in background)
         run: |
-          npm install -g appium
-          appium -v
-          appium driver list --installed
-          appium driver install uiautomator2
-          nohup appium --log-level warn --log-timestamp --local-timezone > appium.log 2>&1 &
-          sleep 10
-          curl http://127.0.0.1:4723/wd/hub/sessions || echo "Appium check failed"
+          chmod +x ./scripts/prepareAppiumServer.sh
+          ./scripts/prepareAppiumServer.sh
 
-      - name: start android emulator
+      - name: start android emulator and run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 25
           target: google_apis
           arch: x86_64
-          script: |
-            adb wait-for-device
-            adb shell input keyevent 82
-            adb devices
-            adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
-            adb shell pm list packages | grep calculator
-            
+          script:  
+            chmod +x ./scripts/uploadAPK.sh
+            ./scripts/uploadAPK.sh
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
 
       - name: Upload results as artifacts
@@ -58,10 +49,10 @@ jobs:
   deploy-report:
       if: always()
       name: Generate and deploy Allure Report
-      needs: run-mobile-tests
+      needs: run-android-tests
       runs-on: ubuntu-latest
       env:
-        GH_PAGES_URL: https://aquality-automation.github.io/aquality-appium-mobile-java-template
+        GH_PAGES_URL: https://clark-ewerton.github.io/mobile-test-automation-lab
       
       steps:
       - name: Get Allure history
