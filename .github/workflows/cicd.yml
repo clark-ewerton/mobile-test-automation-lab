@@ -47,11 +47,7 @@ jobs:
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
           working-directory: ./  # Evita conflito com o segundo emulador
-          continue-on-error: false
           script: | 
-            chmod +x ./scripts/uploadAPK.sh
-            ./scripts/uploadAPK.sh
-
              echo "Criando AVD para Emulator 2..."
              avdmanager create avd --force -n test --abi 'google_apis/x86_64' --package 'system-images;android-28;google_apis;x86_64' --device 'Nexus 5'
           
@@ -59,18 +55,18 @@ jobs:
              nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
           
              echo "Esperando Emulator 2 inicializar..."
-              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell getprop sys.boot_completed
-              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
-              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
-              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
-              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
+              nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell getprop sys.boot_completed
+               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
+               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
+               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
+               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
 
-            chmod +x ./scripts/uploadAPK.sh
-            ./scripts/uploadAPK.sh
+              chmod +x ./scripts/uploadAPK.sh
+              ./scripts/uploadAPK.sh
 
-              adb devices
-              adb -s emulator-5554 emu avd name
-              adb -s emulator-5556 emu avd name
+              nohup /usr/local/lib/android/sdk/platform-tools/adb devices
+              nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu avd name
+              nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu avd name
 
               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
           
