@@ -46,7 +46,6 @@ jobs:
           target: ${{ env.ANDROID_TARGET }}
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
-          emulator-options: -no-snapshot-save -ports 5554,5555
           working-directory: ./  # Evita conflito com o segundo emulador
           continue-on-error: false
           script: | 
