@@ -55,23 +55,27 @@ jobs:
              nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test2 -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
 
                     # 3. Espera pelo boot completo (solução compatível com sh)
-              echo "Aguardando inicialização do emulador secundário..."
-              i=1
-              while [ $i -le 60 ]; do
-              if adb -s emulator-5556 shell getprop sys.boot_completed 2>/dev/null | grep -q '1'; then
+              bash -c '
+                echo "Aguardando inicialização do emulador secundário..."
+                i=1
+                while [ "$i" -le 60 ]; do
+                if adb -s emulator-5556 shell getprop sys.boot_completed 2>/dev/null | grep -q "1"; then
                 echo "Emulador secundário pronto!"
                 break
-                fi
+                  fi
                 echo "Aguardando emulador secundário... ($i/60)"
                 sleep 5
                 i=$((i+1))
                 done
+                '
 
               # 4. Verificação final do boot
-              if ! adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; then
-              echo "::error:: Falha ao iniciar emulador secundário"
-              exit 1
-              fi
+              bash -c '
+                if ! adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; then
+                echo "::error:: Falha ao iniciar emulador secundário"
+                exit 1
+                fi
+              '
       
              echo "Esperando Emulator 2 inicializar..."
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
