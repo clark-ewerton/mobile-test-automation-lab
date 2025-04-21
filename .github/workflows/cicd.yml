@@ -4,7 +4,9 @@ on: [push, pull_request]
 jobs:
   run-mobile-tests:
     runs-on: ubuntu-latest
-
+    outputs:
+      maven_tests: ${{ steps.maven_tests.outcome }}
+      
     steps:
       - name: Enable KVM
         run: |
@@ -44,35 +46,45 @@ jobs:
             adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
             adb shell pm list packages | grep calculator
             
-            # Roda testes e gera allure (gera /target/allure-results)
-            mvn verify -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml allure:report
+            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
 
-            # Cópia DIRETA para artifacts
-            mkdir -p ./public
-            cp -R ./target/site/allure-maven-plugin/* ./public/
-            ls -R ./public/  # Debug
-            echo "BASE_HREF=/your-repo-name/" > ./public/.env
-
-      - uses: actions/upload-artifact@master
+      - name: Upload results as artifacts
+        if: always()
+        uses: actions/upload-artifact@master
         with:
-            name: allure-results
-            path: allure-results
-            retention-days: 20
+          name: allure-results-android
+          path: ./target/allure-results
         
+  deploy-report:
+      if: always()
+      name: Generate and deploy Allure Report
+      needs: run-mobile-tests
+      runs-on: ubuntu-latest
+      env:
+        GH_PAGES_URL: https://aquality-automation.github.io/aquality-appium-mobile-java-template
+      
+      steps:
       - name: Get Allure history
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         if: always()
         continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
-    
-      - name: Test marketplace action
+
+      - name: Download Android results artifacts
+        if: always()
+        uses: actions/download-artifact@master
+        with:
+          name: allure-results-android
+          path: target/allure-results
+
+      - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
         id: allure-report
         with:
-          allure_results: allure-results
+          allure_results: target/allure-results
           gh_pages: gh-pages
           allure_report: allure-report
           allure_history: allure-history
@@ -85,3 +97,13 @@ jobs:
           PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_BRANCH: gh-pages
           PUBLISH_DIR: allure-history
+
+      - name: Post the link to the report
+        if: always()
+        uses: Sibz/github-status-action@v1
+        with:
+          authToken: ${{secrets.GITHUB_TOKEN}}
+          context: 'Test report'
+          state: ${{ needs.build-and-test-android.outputs.maven_tests == 'success' && needs.build-and-test-ios.outputs.maven_tests == 'success' && 'success' || 'failure' }}
+          sha: ${{github.event.pull_request.head.sha || github.sha}}
+          target_url: ${{ env.GH_PAGES_URL }}/${{github.run_number}}/
