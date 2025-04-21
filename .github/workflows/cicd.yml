@@ -60,6 +60,7 @@ jobs:
 
   run-android-tests-saucelabs:
     runs-on: ubuntu-latest
+    needs: run-android-tests-remote
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
