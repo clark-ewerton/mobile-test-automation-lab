@@ -49,11 +49,20 @@ jobs:
           working-directory: ./  # Evita conflito com o segundo emulador
           script: | 
              echo "Criando AVD para Emulator 2..."
-             avdmanager create avd --force -n test --abi 'google_apis/x86_64' --package 'system-images;android-28;google_apis;x86_64' --device 'Nexus 5'
+             avdmanager create avd --force -n test2 --abi 'google_apis/x86_64' --package 'system-images;android-28;google_apis;x86_64' --device 'Nexus 5'
           
              echo "Iniciando Emulator 2 na porta 5556..."
-             nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
-          
+             nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test2 -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
+
+                # 3. Espera inteligente pelo boot completo
+                echo "Aguardando inicialização do emulador secundário..."
+                timeout 180 bash -c "
+                until adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; do
+                echo 'Emulador ainda não pronto...'
+                sleep 10
+                done
+                " || (echo "Falha ao iniciar emulador secundário"; exit 1)
+      
              echo "Esperando Emulator 2 inicializar..."
               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell getprop sys.boot_completed
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
@@ -61,12 +70,12 @@ jobs:
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
 
-              chmod +x ./scripts/uploadAPK.sh
-              ./scripts/uploadAPK.sh
-
               nohup /usr/local/lib/android/sdk/platform-tools/adb devices
               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu avd name
               nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu avd name
+
+              chmod +x ./scripts/uploadAPK.sh
+              ./scripts/uploadAPK.sh
 
               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
           
