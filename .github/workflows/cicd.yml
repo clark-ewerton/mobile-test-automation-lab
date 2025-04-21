@@ -50,7 +50,7 @@ jobs:
             # Cópia DIRETA para artifacts
             mkdir -p ./artifacts/allure-report
             cp -R ./target/site/allure-maven-plugin/* ./artifacts/allure-report/
-            ls -R ./artifacts/  # Debug
+            ls -R ./artifacts/allure-report  # Debug
     
       - name: Upload Allure report artifact
         uses: actions/upload-artifact@v4
