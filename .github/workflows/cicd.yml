@@ -59,7 +59,7 @@ jobs:
           avdmanager create avd -n test_avd_2 -k "system-images;android-${{ env.ANDROID_API_LEVEL }};${{ env.ANDROID_TARGET }};${{ env.ANDROID_ARCH }}" -d "pixel_4" -f
           
           echo "Iniciando Emulator 2 na porta 5556..."
-          nohup $ANDROID_HOME/emulator/emulator -avd test_avd_2 -no-snapshot-save -noaudio -no-boot-anim -ports 5556,5557 -gpu swiftshader_indirect > /dev/null 2>&1 &
+          nohup $ANDROID_HOME/emulator/emulator -avd test_avd_2 > /dev/null 2>&1 &
           
           echo "Esperando Emulator 2 inicializar..."
           $ANDROID_HOME/platform-tools/adb -s emulator-5556 wait-for-device
