@@ -44,6 +44,7 @@ jobs:
             adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
             adb shell pm list packages | grep calculator
                   # Roda testes (gera /target/allure-results)
+            mvn clean compile -DskipTests  
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
 
             # Gera relatório Allure (em /target/site/allure-maven-plugin)
@@ -61,13 +62,16 @@ jobs:
             ls -R ./artifacts/  # Verifica se os arquivos foram copiados
 
       - name: Upload Allure report artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: ./artifacts/allure-report/
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        uses: actions/upload-pages-artifact@v2
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: ./artifacts/allure-report/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
