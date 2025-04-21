@@ -1,1 +1,0 @@
-[{"uid":"cdddc30b0bd18c9b","name":"preCondition","time":{"start":1745265880635,"stop":1745265880638,"duration":3},"status":"broken","severity":"normal"},{"uid":"3cd725cd8e3f5b9","name":"testCalculatorOperations","time":{"start":1745265880648,"stop":1745265880649,"duration":1},"status":"skipped","severity":"normal"}]
