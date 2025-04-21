@@ -15,7 +15,7 @@
 
     <test name="Android emulator 2">
         <parameter name="platform" value="android"/>
-        <parameter name="udid" value="emulator-5554"/>
+        <parameter name="udid" value="emulator-5556"/>
         <parameter name="platformVersion" value="13"/>
 	<parameter name="env" value="local"/>
         <classes>
