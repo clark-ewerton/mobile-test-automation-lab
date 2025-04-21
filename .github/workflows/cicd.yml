@@ -46,11 +46,43 @@ jobs:
           target: ${{ env.ANDROID_TARGET }}
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
+          emulator-options: -no-snapshot-save -ports 5554,5555
+          working-directory: ./  # Evita conflito com o segundo emulador
+          continue-on-error: false
           script: | 
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
-            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
-      
+
+           # Cria e inicia o Emulador 2 (manualmente)
+      - name: Create and start Emulator 2
+        run: |
+          echo "Criando AVD para Emulator 2..."
+          avdmanager create avd -n test_avd_2 -k "system-images;android-${{ env.ANDROID_API_LEVEL }};${{ env.ANDROID_TARGET }};${{ env.ANDROID_ARCH }}" -d "pixel_4" -f
+          
+          echo "Iniciando Emulator 2 na porta 5556..."
+          nohup $ANDROID_HOME/emulator/emulator -avd test_avd_2 -no-snapshot-save -noaudio -no-boot-anim -ports 5556,5557 -gpu swiftshader_indirect > /dev/null 2>&1 &
+          
+          echo "Esperando Emulator 2 inicializar..."
+          $ANDROID_HOME/platform-tools/adb -s emulator-5556 wait-for-device
+          $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
+          $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
+          $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
+
+            chmod +x ./scripts/uploadAPK.sh
+            ./scripts/uploadAPK.sh
+
+      # Verifica se ambos os emuladores estão rodando
+      - name: Check running emulators
+        run: |
+          adb devices
+          adb -s emulator-5554 emu avd name
+          adb -s emulator-5556 emu avd name
+
+        # Roda os testes nos dois emuladores em paralelo
+      - name: Run Tests on Both Emulators
+        run: |
+          mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+          
       - name: Upload results as artifacts
         if: always()
         uses: actions/upload-artifact@master
