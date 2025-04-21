@@ -53,16 +53,17 @@ jobs:
             ./scripts/uploadAPK.sh
 
              echo "Criando AVD para Emulator 2..."
-             avdmanager create avd -n test_avd_2 -k "system-images;android-${{ env.ANDROID_API_LEVEL }};${{ env.ANDROID_TARGET }};${{ env.ANDROID_ARCH }}" -d "pixel_4" -f
+             avdmanager create avd --force -n test --abi 'google_apis/x86_64' --package 'system-images;android-28;google_apis;x86_64' --device 'Nexus 5'
           
              echo "Iniciando Emulator 2 na porta 5556..."
-             nohup $ANDROID_HOME/emulator/emulator -avd test_avd_2 > /dev/null 2>&1 &
+             nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
           
              echo "Esperando Emulator 2 inicializar..."
-              $ANDROID_HOME/platform-tools/adb -s emulator-5556 wait-for-device
-              $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
-              $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
-              $ANDROID_HOME/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
+              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell getprop sys.boot_completed
+              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
+              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
+              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
+              /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
 
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
