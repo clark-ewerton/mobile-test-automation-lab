@@ -24,6 +24,14 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Verify Maven setup
+        run: |
+            mvn --version
+            ls -la ~/.m2/repository  # Verifica se o diretório do cache existe
+
+      - name: Build with Maven
+        run: mvn install -DskipTests  # Primeiro baixa todas as dependências
+
       - name: Setup Appium (run in background)
         run: |
           chmod +x ./scripts/prepareAppiumServer.sh
