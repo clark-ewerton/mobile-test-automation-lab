@@ -27,11 +27,10 @@ if ! adb -s emulator-5556 shell getprop sys.boot_completed | grep -q "1"; then
 fi
 
 echo "Esperando Emulator 2 inicializar..."
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global animator_duration_scale 0
+adb -s emulator-5556 shell settings put global window_animation_scale 0
+adb -s emulator-5556 shell settings put global transition_animation_scale 0
+adb -s emulator-5556 shell settings put global animator_duration_scale 0
 
-nohup /usr/local/lib/android/sdk/platform-tools/adb devices
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu avd name
-nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu avd name
+adb devices
+adb -s emulator-5554 emu avd name
+adb -s emulator-5556 emu avd name
