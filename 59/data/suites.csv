@@ -1,2 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","6206","testCalculatorOperations","Suite","Mon Apr 21 18:59:05 GMT 2025","passed","Mon Apr 21 18:59:11 GMT 2025","com.clarkewerton.android.CalculatorTest","RedmiNote13","com.clarkewerton.android.CalculatorTest","testCalculatorOperations"
