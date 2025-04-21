@@ -54,17 +54,24 @@ jobs:
              echo "Iniciando Emulator 2 na porta 5556..."
              nohup /usr/local/lib/android/sdk/emulator/emulator -port 5556 -avd test2 -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
 
-                # 3. Espera inteligente pelo boot completo
-                echo "Aguardando inicialização do emulador secundário..."
-                timeout 180 bash -c "
-                until adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; do
-                echo 'Emulador ainda não pronto...'
-                sleep 10
+              # 3. Espera pelo boot completo (sintaxe corrigida)
+              echo "Aguardando inicialização do emulador secundário..."
+              for i in {1..60}; do
+                if adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; then
+                  echo "Emulador secundário pronto!"
+                break
+                fi
+                echo "Aguardando emulador secundário... ($i/60)"
+                sleep 5
                 done
-                " || (echo "Falha ao iniciar emulador secundário"; exit 1)
+
+              # 4. Verificação final do boot
+              if ! adb -s emulator-5556 shell getprop sys.boot_completed | grep -q '1'; then
+              echo "::error:: Falha ao iniciar emulador secundário"
+              exit 1
+              fi
       
              echo "Esperando Emulator 2 inicializar..."
-              nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell getprop sys.boot_completed
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 wait-for-device
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global window_animation_scale 0
                nohup /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 shell settings put global transition_animation_scale 0
