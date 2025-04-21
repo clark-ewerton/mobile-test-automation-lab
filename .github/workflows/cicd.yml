@@ -58,11 +58,21 @@ jobs:
           name: allure-report
           path: ./artifacts/allure-report/
 
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: ./
+
+      - name: Verifies content of files after download
+        run: |
+          echo "Listing downloaded files:"
+          ls -R ./
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
