@@ -43,24 +43,15 @@ jobs:
             adb devices
             adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
             adb shell pm list packages | grep calculator
-                  # Roda testes (gera /target/allure-results)
-            mvn clean compile -DskipTests  
-            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+            
+            # Roda testes e gera allure (gera /target/allure-results)
+            mvn verify -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml allure:report
 
-            # Gera relatório Allure (em /target/site/allure-maven-plugin)
-            mvn allure:report
-
-            # Copia relatório para fora do runner (se necessário)
-            mkdir -p /tmp/allure-report
-            cp -R ./target/site/allure-maven-plugin/* /tmp/allure-report/
-            ls -R /tmp/allure-report/  # Debug (opcional)
-    
-          post-checkout: |
-            # Executado APÓS o script principal, mas ANTES do emulador ser desligado
+            # Cópia DIRETA para artifacts
             mkdir -p ./artifacts/allure-report
-            cp -R /tmp/allure-report/* ./artifacts/allure-report/
-            ls -R ./artifacts/  # Verifica se os arquivos foram copiados
-
+            cp -R ./target/site/allure-maven-plugin/* ./artifacts/allure-report/
+            ls -R ./artifacts/  # Debug
+    
       - name: Upload Allure report artifact
         uses: actions/upload-artifact@v4
         with:
