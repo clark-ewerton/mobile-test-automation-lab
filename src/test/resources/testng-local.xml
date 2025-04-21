@@ -1,26 +1,27 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Suite">
+<suite name="Suite" parallel="tests" thread-count="2">
 
 <!-- configs below to run in local -->
-    <test name="RedmiNote13">
+    <test name="Android emulator 1">
         <parameter name="platform" value="android"/>
         <parameter name="udid" value="emulator-5554"/>
         <parameter name="platformVersion" value="13"/>
-		<parameter name="env" value="local"/>
+        <parameter name="env" value="local"/>
         <classes>
             <class name="com.clarkewerton.android.CalculatorTest"/>
         </classes>
     </test>
 
-    <!--<test name="Android emulator 2">
+    <test name="Android emulator 2">
         <parameter name="platform" value="android"/>
         <parameter name="udid" value="emulator-5554"/>
         <parameter name="platformVersion" value="13"/>
+	<parameter name="env" value="local"/>
         <classes>
             <class name="com.clarkewerton.android.CalculatorTest"/>
         </classes>
-    </test>-->
+    </test>
 
     <!--<test name="iOS-Iphone">
         <parameter name="platform" value="ios"/>
