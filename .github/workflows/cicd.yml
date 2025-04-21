@@ -51,7 +51,7 @@ jobs:
             set -e
 
             # Define ação ao detectar erro em qualquer linha
-            trap 'echo "🛑 Houve um erro. Encerrando emulator-5556..."; /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu kill >/dev/null 2>&1 || true' ERR
+            trap 'echo "🛑 Houve um erro. Encerrando emulator-5556..."; /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu kill >/dev/null 2>&1 || true' EXIT
 
             chmod +x ./scripts/start_emulator_2.sh
             ./scripts/start_emulator_2.sh
