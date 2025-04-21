@@ -50,18 +50,13 @@ jobs:
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
-
-      - name: Prepare Allure Results (Remote)
-        run: |
-          mkdir -p allure-results/remote  # Cria a estrutura
-          cp -r target/allure-results/* allure-results/remote  # Copia os resultados
       
-      - name: Upload Allure Results (Remote)
+      - name: Upload results as artifacts
         if: always()
         uses: actions/upload-artifact@master
         with:
-          name: allure-results-remote
-          path: allure-results/remote
+          name: allure-results-android-remote
+          path: ./target/allure-results
 
   run-android-tests-saucelabs:
     runs-on: ubuntu-latest
@@ -78,18 +73,13 @@ jobs:
 
       - name: Run Tests on Sauce Labs
         run: mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
-
-      - name: Prepare Allure Results (Remote)
-        run: |
-          mkdir -p allure-results/cloud  # Cria a estrutura
-          cp -r target/allure-results/* allure-results/cloud  # Copia os resultados
       
-      - name: Upload Allure Results (Sauce Labs)
+      - name: Upload results as artifacts
         if: always()
         uses: actions/upload-artifact@master
         with:
-          name: allure-results-saucelabs
-          path: allure-results/cloud
+          name: allure-results-android-cloud
+          path: ./target/allure-results
         
   deploy-report:
       if: always()
@@ -100,31 +90,34 @@ jobs:
         GH_PAGES_URL: https://clark-ewerton.github.io/mobile-test-automation-lab
       
       steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Get Allure history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-      - name: Download Allure Results
+      - name: Download Android remote results artifacts
+        if: always()
         uses: actions/download-artifact@master
         with:
-          path: allure-results
+          name: allure-results-android-remote
+          path: target/allure-results
 
-      - name: Merge Allure Results
-        run: |
-          mkdir -p merged-results
-          # Verifica se os diretórios existem antes de copiar
-          if [ -d "allure-results/remote" ]; then
-          cp -r allure-results/remote/* merged-results/
-          fi
-          if [ -d "allure-results/cloud" ]; then
-          cp -r allure-results/cloud/* merged-results/
-          fi
+      - name: Download Android cloud results artifacts
+        if: always()
+        uses: actions/download-artifact@master
+        with:
+          name: allure-results-android-cloud
+          path: target/allure-results
 
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
         id: allure-report
         with:
-          allure_results: merged-results
+          allure_results: target/allure-results
           gh_pages: gh-pages
           allure_report: allure-report
           allure_history: allure-history
