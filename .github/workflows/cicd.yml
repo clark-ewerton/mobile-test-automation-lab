@@ -51,12 +51,17 @@ jobs:
             ./scripts/uploadAPK.sh
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
 
+      - name: Prepare Allure Results (Remote)
+        run: |
+          mkdir -p allure-results/remote  # Cria a estrutura
+          cp -r target/allure-results/* allure-results/remote  # Copia os resultados
+      
       - name: Upload Allure Results (Remote)
         if: always()
         uses: actions/upload-artifact@master
         with:
           name: allure-results-remote
-          path: ./target/allure-results
+          path: allure-results/remote
 
   run-android-tests-saucelabs:
     runs-on: ubuntu-latest
@@ -74,12 +79,17 @@ jobs:
       - name: Run Tests on Sauce Labs
         run: mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
 
+      - name: Prepare Allure Results (Remote)
+        run: |
+          mkdir -p allure-results/cloud  # Cria a estrutura
+          cp -r target/allure-results/* allure-results/cloud  # Copia os resultados
+      
       - name: Upload Allure Results (Sauce Labs)
         if: always()
         uses: actions/upload-artifact@master
         with:
           name: allure-results-saucelabs
-          path: ./target/allure-results
+          path: allure-results/cloud
         
   deploy-report:
       if: always()
@@ -94,14 +104,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Allure Results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@master
         with:
           path: allure-results
 
       - name: Merge Allure Results
         run: |
           mkdir -p merged-results
-          cp -r allure-results/local/* merged-results/ || true
+          cp -r allure-results/remote/* merged-results/ || true
           cp -r allure-results/cloud/* merged-results/ || true
 
       - name: Generate Allure Report
