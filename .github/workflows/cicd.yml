@@ -44,3 +44,15 @@ jobs:
             adb install -t -g ./app/googleCalculator.apk  # APK precisa estar no repositório
             adb shell pm list packages | grep calculator
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+
+      - name: Generate Allure Report
+        run: |
+          mvn allure:report
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: target/site/allure-maven-plugin
