@@ -57,6 +57,32 @@ jobs:
         with:
           name: allure-results-android
           path: ./target/allure-results
+
+  run-android-tests-saucelabs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify .properties file
+        run: |
+          if [ ! -f "src/main/resources/conf/cloud.properties" ]; then
+            echo "::error::Arquivo config.properties não encontrado!"
+            exit 1
+          fi
+          # Opcional: Verificar se as variáveis existem (mas não mostrar valores)
+          grep -q "lt.username" src/main/resources/conf/cloud.properties || exit 1
+          grep -q "lt.accesskey" src/main/resources/conf/cloud.properties || exit 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Run Tests on Sauce Labs
+        run: mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
         
   deploy-report:
       if: always()
@@ -107,6 +133,6 @@ jobs:
         with:
           authToken: ${{secrets.GITHUB_TOKEN}}
           context: 'Test report'
-          state: ${{ needs.run-android-tests-remote.outputs.maven_tests == 'success' && needs. run-android-tests-cloud.outputs.maven_tests == 'success' && 'success' || 'failure' }}
+          state: ${{ needs.run-android-tests-remote.outputs.maven_tests == 'success' && needs.run-android-tests-saucelabs.outputs.maven_tests == 'success' && 'success' || 'failure' }}
           sha: ${{github.event.pull_request.head.sha || github.sha}}
           target_url: ${{ env.GH_PAGES_URL }}/${{github.run_number}}/
