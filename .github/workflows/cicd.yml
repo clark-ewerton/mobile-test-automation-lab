@@ -111,8 +111,13 @@ jobs:
       - name: Merge Allure Results
         run: |
           mkdir -p merged-results
-          cp -r allure-results/remote/* merged-results/ || true
-          cp -r allure-results/cloud/* merged-results/ || true
+          # Verifica se os diretórios existem antes de copiar
+          if [ -d "allure-results/remote" ]; then
+          cp -r allure-results/remote/* merged-results/
+          fi
+          if [ -d "allure-results/cloud" ]; then
+          cp -r allure-results/cloud/* merged-results/
+          fi
 
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
