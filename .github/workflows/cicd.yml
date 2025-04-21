@@ -47,13 +47,24 @@ jobs:
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
           script: | 
-              chmod +x ./scripts/start_emulator_2.sh
-              ./scripts/start_emulator_2.sh
-              
-              chmod +x ./scripts/uploadAPK.sh
-              ./scripts/uploadAPK.sh
+            # Faz o script falhar ao primeiro erro
+            set -e
 
-              mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+            # Define ação ao detectar erro em qualquer linha
+            trap 'echo "🛑 Houve um erro. Encerrando emulator-5556..."; \
+            /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu kill || true' ERR
+
+            chmod +x ./scripts/start_emulator_2.sh
+            ./scripts/start_emulator_2.sh
+
+            chmod +x ./scripts/uploadAPK.sh
+            ./scripts/uploadAPK.sh
+
+            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+
+            # Se chegou até aqui, mata o emulador secundário também
+            echo " Finalizando emulator-5556"
+            /usr/local/lib/android/sdk/platform-tools/adb -s emulator-5556 emu kill || true
           
       - name: Upload results as artifacts
         if: always()
