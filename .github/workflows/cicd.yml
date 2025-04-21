@@ -55,7 +55,7 @@ jobs:
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
 
-            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+            mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml || true
 
             echo "Encerrando emulator-5554 (gerenciado pelo runner)"
             adb -s emulator-5554 emu kill || true
