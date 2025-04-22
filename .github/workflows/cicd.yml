@@ -47,9 +47,11 @@ jobs:
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
           script: | 
+            set -e
+            
             chmod +x ./scripts/start_emulator_2.sh
             ./scripts/start_emulator_2.sh
-
+            
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
 
