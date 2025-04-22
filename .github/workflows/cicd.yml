@@ -47,8 +47,6 @@ jobs:
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
           script: | 
-            set -e
-            
             chmod +x ./scripts/start_emulator_2.sh
             ./scripts/start_emulator_2.sh
 
@@ -56,13 +54,6 @@ jobs:
             ./scripts/uploadAPK.sh
 
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml || true
-
-            echo "Encerrando emulator-5554 (gerenciado pelo runner)"
-            adb -s emulator-5554 emu kill || true
-            echo "Encerrando emulator-5556 (manual)"
-            adb -s emulator-5556 emu kill || true
-            echo "Listando dispositivos ativos:"
-            adb devices || true
           
       - name: Upload results as artifacts
         if: always()
