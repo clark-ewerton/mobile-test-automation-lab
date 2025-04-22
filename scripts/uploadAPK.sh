@@ -9,4 +9,4 @@
       adb -s emulator-5554 shell pm list packages | grep calculator || echo "Pacote não encontrado no emulador 5554"
       
       #echo "Verificando pacotes no emulador 5556:"
-      adb -s emulator-5556 shell pm list packages | grep calculator || echo "Pacote não encontrado no emulador 5556
+      adb -s emulator-5556 shell pm list packages | grep calculator || echo "Pacote não encontrado no emulador 5556"
