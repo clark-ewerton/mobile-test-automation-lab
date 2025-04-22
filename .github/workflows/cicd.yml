@@ -1,18 +1,34 @@
 name: Appium CICD Test
+
 on: [push, pull_request]
 
+env:
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
+  MAVEN_CACHE: maven
+
+  ANDROID_PROFILE: Nexus 6
+  ANDROID_TARGET: google_apis
+  ANDROID_API_LEVEL: 28
+  ANDROID_ARCH: x86_64
+
+  ARTIFACT_NAME_REMOTE: allure-results-android-remote
+  ARTIFACT_NAME_CLOUD: allure-results-android-cloud
+  GH_PAGES_URL: https://clark-ewerton.github.io/mobile-test-automation-lab
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
+  # --------------------------
+  # Android Tests on Emulator
+  # --------------------------
   run-android-tests-remote:
-    env:
-      ANDROID_PROFILE: Nexus 6
-      ANDROID_TARGET: google_apis
-      ANDROID_API_LEVEL: 28
-      ANDROID_ARCH: x86_64
-      
     runs-on: ubuntu-latest
     outputs:
       maven_tests: ${{ steps.maven_tests.outcome }}
-      
+
     steps:
       - name: Enable KVM
         run: |
@@ -20,25 +36,25 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: pull the project in to the runner
+      - name: Checkout project
         uses: actions/checkout@v4
-          
-      - name: Set up JDK 17
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: maven
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: ${{ env.MAVEN_CACHE }}
 
       - name: Build with Maven
         run: mvn install -DskipTests
 
-      - name: Setup and Run Appium Server (run in background)
+      - name: Start Appium Server
         run: |
           chmod +x ./scripts/prepareAppiumServer.sh
           ./scripts/prepareAppiumServer.sh
 
-      - name: Start android emulator and run tests
+      - name: Run tests on Android emulators
         id: maven_tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -46,80 +62,86 @@ jobs:
           target: ${{ env.ANDROID_TARGET }}
           arch: ${{ env.ANDROID_ARCH }}
           profile: ${{ env.ANDROID_PROFILE }}
-          script: | 
+          script: |
             chmod +x ./scripts/start_emulator_2.sh
             ./scripts/start_emulator_2.sh
-            
+
             chmod +x ./scripts/uploadAPK.sh
             ./scripts/uploadAPK.sh
 
             mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml || true
 
-            echo "Encerrando emulator-5554 (gerenciado pelo runner)"
+            echo "Closing connection with emulator-5554"
             adb -s emulator-5554 emu kill || true
-            echo "Encerrando emulator-5556 (manual)"
+
+            echo "Closing connection with emulator-5556"
             adb -s emulator-5556 emu kill || true
-          
-      - name: Upload results as artifacts
+
+      - name: Upload results (emulador)
         if: always()
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
-          name: allure-results-android-remote
+          name: ${{ env.ARTIFACT_NAME_REMOTE }}
           path: ./target/allure-results
 
+  # --------------------------
+  # Android Tests on Sauce Labs
+  # --------------------------
   run-android-tests-saucelabs:
     runs-on: ubuntu-latest
-    needs: run-android-tests-remote
+    outputs:
+      maven_tests: ${{ steps.maven_tests.outcome }}
+
     steps:
-      - name: Checkout code
+      - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: maven
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: ${{ env.MAVEN_CACHE }}
 
-      - name: Run Tests on Sauce Labs
+      - name: Run tests on Sauce Labs
         run: mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
-      
-      - name: Upload results as artifacts
+
+      - name: Upload results (Sauce Labs)
         if: always()
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
-          name: allure-results-android-cloud
+          name: ${{ env.ARTIFACT_NAME_CLOUD }}
           path: ./target/allure-results
-        
+
+  # --------------------------
+  # Generate and Publish reports
+  # --------------------------
   deploy-report:
-      if: always()
-      name: Generate and deploy Allure Report
-      needs: [run-android-tests-remote, run-android-tests-saucelabs]
-      runs-on: ubuntu-latest
-      env:
-        GH_PAGES_URL: https://clark-ewerton.github.io/mobile-test-automation-lab
-      
-      steps:
-      - name: Get Allure history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
+    if: always()
+    name: Generate and deploy Allure Report
+    needs: [run-android-tests-remote, run-android-tests-saucelabs]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
+        continue-on-error: true
 
-      - name: Download Android remote results artifacts
+      - name: Download artifacts - Emulator
         if: always()
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
-          name: allure-results-android-remote
+          name: ${{ env.ARTIFACT_NAME_REMOTE }}
           path: target/allure-results
 
-      - name: Download Android cloud results artifacts
+      - name: Download artifacts - Sauce Labs
         if: always()
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
-          name: allure-results-android-cloud
+          name: ${{ env.ARTIFACT_NAME_CLOUD }}
           path: target/allure-results
 
       - name: Generate Allure Report
@@ -133,7 +155,7 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      - name: Deploy report to Github Pages
+      - name: Deploy to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v2
         env:
@@ -141,12 +163,12 @@ jobs:
           PUBLISH_BRANCH: gh-pages
           PUBLISH_DIR: allure-history
 
-      - name: Post the link to the report
+      - name: Post reports link
         if: always()
         uses: Sibz/github-status-action@v1
         with:
-          authToken: ${{secrets.GITHUB_TOKEN}}
+          authToken: ${{ secrets.GITHUB_TOKEN }}
           context: 'Test report'
           state: ${{ needs.run-android-tests-remote.outputs.maven_tests == 'success' && needs.run-android-tests-saucelabs.outputs.maven_tests == 'success' && 'success' || 'failure' }}
-          sha: ${{github.event.pull_request.head.sha || github.sha}}
-          target_url: ${{ env.GH_PAGES_URL }}/${{github.run_number}}/
+          sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          target_url: ${{ env.GH_PAGES_URL }}/${{ github.run_number }}/
