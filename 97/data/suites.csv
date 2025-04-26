@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","5336","testCalculatorOperations","Suite","Sat Apr 26 23:44:32 GMT 2025","failed","Sat Apr 26 23:44:37 GMT 2025","com.clarkewerton.android.CalculatorTest","Android emulator 2","com.clarkewerton.android.CalculatorTest","testCalculatorOperations"
+"","7622","testCalculatorOperations","Suite","Sat Apr 26 23:44:24 GMT 2025","failed","Sat Apr 26 23:44:32 GMT 2025","com.clarkewerton.android.CalculatorTest","Android emulator 1","com.clarkewerton.android.CalculatorTest","testCalculatorOperations"
+"","12448","testCalculatorOperations","Suite","Sat Apr 26 23:40:22 GMT 2025","failed","Sat Apr 26 23:40:34 GMT 2025","com.clarkewerton.android.CalculatorTest","GooglePixel7","com.clarkewerton.android.CalculatorTest","testCalculatorOperations"
+"","13132","testCalculatorOperations","Suite","Sat Apr 26 23:41:35 GMT 2025","failed","Sat Apr 26 23:41:48 GMT 2025","com.clarkewerton.android.CalculatorTest","GooglePixel8","com.clarkewerton.android.CalculatorTest","testCalculatorOperations"
