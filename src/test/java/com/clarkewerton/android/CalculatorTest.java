@@ -88,7 +88,7 @@ public void testCalculatorOperations(String scenario, String operation, List<Obj
     public Object[][] calculatorScenarios() {
         return new Object[][]{
             {"positive", "add", Arrays.asList(2, 3), "6"},
-           /* {"positive", "add", Arrays.asList(2, 3, 4), "9"},
+            {"positive", "add", Arrays.asList(2, 3, 4), "9"},
             {"positive", "subtract", Arrays.asList(10, 3), "7"},
             {"positive","multiply", Arrays.asList(3, 4), "12"},
             {"positive", "divide", Arrays.asList(10, 2), "5"},
@@ -105,7 +105,7 @@ public void testCalculatorOperations(String scenario, String operation, List<Obj
 			{"negative", "invalidOperation", Arrays.asList(2, 2), "Invalid Operation"},
 			{"negative", "add", Collections.emptyList(), "Invalid Entry"},
 			{"negative", "subtract", Arrays.asList(5), "Need at least two numbers to make operation"},
-			{"negative", "add", Arrays.asList("A", 5), "Invalid Entry"},*/
+			{"negative", "add", Arrays.asList("A", 5), "Invalid Entry"},
         };
     }
 }
