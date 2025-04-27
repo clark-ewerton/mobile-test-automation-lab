@@ -58,6 +58,7 @@ This project covers the following automated test scenarios on the Google Calcula
 | Negative   | Subtract            | 5                  | Need at least two numbers to make operation   |
 | Negative   | Add                 | A, 5               | Invalid Entry                                 |
 
+#### It uses DataDriver Testing with TestNG. @DataProvider
 
 ---
 
@@ -136,6 +137,7 @@ mobile-test-automation-lab/
 │ │ │ │ │ ├── testng-local.xml
 ├── .github/workflows/cicd.yml # GitHub workflows (CI, actions)
 ├── app/googleCalculator.apk # APKs or app-related files
+├── scripts/ # support scripts to initialize appium and create a second emulator device on githubactions
 ├── target/allure-reports # Generated reports (e.g., Allure)
 │ ├── .gitignore
 ├── pom.xml # Maven configuration
