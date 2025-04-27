@@ -1,9 +1,14 @@
-# Mobile Test Automation Lab
+# Project to demonstrate knowledge in Appium + Design Patterns + CI/CD (Github Actions and Pages) + Allure Reports + In parallel mode + SauceLabs
 
 This project demonstrates mobile automation testing using Java, Appium, TestNG, and Allure Reports. It is configured to run locally on real Android devices and in the cloud on SauceLabs infrastructure.
 
 The main goal of this project is to automate a suite of tests covering both positive and negative scenarios for the Google Calculator application.
 
+[![Cypress CI/CD](https://github.com/clark-ewerton/mobile-test-automation-lab/workflows/Appium CICD Test/badge.svg)](https://github.com/clark-ewerton/mobile-test-automation-lab/actions/workflows/cicd.yml)
+[![Pages Status](https://img.shields.io/badge/GitHub%20Pages-Online-green)](https://clark-ewerton.github.io/mobile-test-automation-lab/)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+# ⭐ If you find this project useful, please consider giving it a star to help increase its visibility.
 ---
 
 ## 📱 Project Overview
@@ -211,10 +216,23 @@ When triggered by a GitHub Actions workflow, tests will be run by the following 
 |Local | Connected Android devices | Parallel | testng-local.xml|
 |Cloud | SauceLab Android devices | Sequential | testng-cloud.xml|
 
+See below the flow that the pipeline is doing:
+
+```mermaid
+graph TD
+  A[Begin] --> B[Run mobile tests on 2 Emulated Android Devices - in parallel]
+  A --> C[Run mobile tests on Saucelabs - sequentially]
+  B --> D[Final Report Dashboard - GitHub Pages - Allure Reports]
+  C --> D[Final Report Dashboard - GitHub Pages - Allure Reports]
+  D --> E[End]
+```
+
 ## 📊 Allure Reports
 After every test execution, Allure reports are generated and published to:
 
 🔗 https://clark-ewerton.github.io/mobile-test-automation-lab
+
+- 🖼️ **Screenshots:** (only on failure)
 
 ## 🌟 Contributing
 Contributions are welcome!
