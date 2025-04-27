@@ -1,18 +1,14 @@
 # Mobile Test Automation Lab
 
-This repository is a mobile test automation lab using Java, Appium, TestNG, Maven, and Allure, integrated with GitHub Actions for CI/CD. It supports running tests on both local Android emulators and cloud devices via Sauce Labs.
+This project demonstrates mobile automation testing using Java, Appium, TestNG, and Allure Reports. It is configured to run locally on real Android devices and in the cloud on SauceLabs infrastructure.
+
+The main goal of this project is to automate a suite of tests covering both positive and negative scenarios for the Google Calculator application.
 
 ---
 
 ## 📱 Project Overview
 
 This project provides a complete and extensible structure to automate tests for Android applications. It includes local and remote (cloud) execution flows, automated report generation, and integration with GitHub Pages.
-
-Besides, when it runs via Github Actions, it'll do two things:
-
-1- Run both cloud and remote Android tests parallely.
-2- Inside the remote Android tests mode it runs tests paralelly in two different android devices
-On cloud, it runs in two different android devices sequentially
 
 ### What'll be run?
 
@@ -79,23 +75,17 @@ Ensures a single instance of critical classes like configuration readers or driv
 - **Examples**:
   - [`DriverManager.java`](./src/main/java/com/clarkewerton/driver/manager/AndroidDriverManager.java)
 
-#### 4. Facade Design Pattern
-Simplifies complex UI interactions by exposing higher-level methods in the Page Object classes.
+#### 4. Strategy Design Pattern
+To select between local and cloud execution.
 
-- **Example**: [`CalculatorPage.java`](./src/main/java/com/clarkewerton/page_object/CalculatorPage.java)
+- **Example**: [`BaseTest.java`](./src/main/java/com/clarkewerton/test/BaseTest.java)
 
 ## 📁 Project Structure
 
 ```
 mobile-test-automation-lab/
-├── .github/workflows/cicd.yml # GitHub workflows (CI, actions)
-├── app/googleCalculator.apk # APKs or app-related files
-├── target/allure-reports # Generated reports (e.g., Allure)
 ├── src/
-│ │ └── main/
-│ │ │ └── java/
-│ │ │ |└── com/
-│ │ │ │ └── clarkewerton/
+│ │ └── main/java/com/clarkewerton
 │ │ │ │ │ │ └── config/
 │ │ │ │ │ │ │ │ ├── Configuration.java
 │ │ │ │ │ │ │ │ ├── ConfigurationManager.java
@@ -122,14 +112,15 @@ mobile-test-automation-lab/
 │ │ │ │ │ │ │── cloud.properties
 │ │ │ │ │ │ │── general.properties
 │ │ │ │ │ │ │── ios.properties
-│ │ │ └── test/
-│ │ │ |└── com/
-│ │ │ │ └── clarkewerton/
+│ │ │ └── test/java/com/clarkewerton
 │ │ │ │ │ │ └── android/ # Test classes for Android app
 │ ││ ││ ││ ││ │ ├── CalculatorTest.java
 │ │ │ └── resources/
 │ │ │ │ │ ├── testng-cloud.xml
 │ │ │ │ │ ├── testng-local.xml
+├── .github/workflows/cicd.yml # GitHub workflows (CI, actions)
+├── app/googleCalculator.apk # APKs or app-related files
+├── target/allure-reports # Generated reports (e.g., Allure)
 │ ├── .gitignore
 ├── pom.xml # Maven configuration
 └── README.md
@@ -146,7 +137,7 @@ mobile-test-automation-lab/
 - Android SDK and emulator configured  
 - Appium installed and running  
 
-### Steps
+### Steps to run it via real or Emulated devices
 
 ```bash
 # Clone the repository
@@ -166,13 +157,37 @@ Copy it
 Place it into testng-local.xml, find the line
 <parameter name="udid" value="emulator-5554"/>. Replace emulator-5554 by your id.
 
-If you want, please comment the second device block on testng-local file as it won't work tests locally parallely. Unless you emulate a second device via Android Emulator.
+If you want, please comment the second device block on testng-local file as it won't work tests locally in parallel. Unless you emulate a second device via Android Emulator.
 
 # Upload APK to the device
 Please install Google Calculator into your Android device.
 
 # Run TestNG test suite
 mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
+
+# View Allure report
+mvn allure:serve
+```
+
+### Steps to run it via SauceLabs
+
+```bash
+# Clone the repository
+git clone https://github.com/clark-ewerton/mobile-test-automation-lab.git
+cd mobile-test-automation-lab
+
+# Install dependencies
+mvn install -DskipTests
+
+# SauceLabs setup
+- Create an account in Saucelabs
+- Grab both username and key from your account
+- Replace it on [`cloud.properties`](./src/main/resources/conf/cloud.properties)
+- Start any android device in Saucelabs
+- Don't forget to install googleCalculator.apk
+
+# Run TestNG test suite
+mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
 
 # View Allure report
 mvn allure:serve
@@ -188,6 +203,13 @@ The workflow file `.github/workflows/cicd.yml` includes three jobs:
 `deploy-report`: generates an Allure report and publishes it to GitHub Pages.
 
 Allure results are stored as artifacts and published after every execution, regardless of test results.
+
+When triggered by a GitHub Actions workflow, tests will be run by the following way:
+
+|Execution Type | Target | Parallelism | TestNG File|
+|------------|---------------------|--------------------|-----------------------------------------------|
+|Local | Connected Android devices | Parallel | testng-local.xml|
+|Cloud | SauceLab Android devices | Sequential | testng-cloud.xml|
 
 ## 📊 Allure Reports
 After every test execution, Allure reports are generated and published to:
