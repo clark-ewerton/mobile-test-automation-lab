@@ -8,6 +8,12 @@ This repository is a mobile test automation lab using Java, Appium, TestNG, Mave
 
 This project provides a complete and extensible structure to automate tests for Android applications. It includes local and remote (cloud) execution flows, automated report generation, and integration with GitHub Pages.
 
+Besides, when it runs via Github Actions, it'll do two things:
+
+1- Run both cloud and remote Android tests parallely.
+2- Inside the remote Android tests mode it runs tests paralelly in two different android devices
+On cloud, it runs in two different android devices sequentially
+
 ### What'll be run?
 
 The idea was to create a suite of automated tests that covers some positive and negative scenarios of a `Google Calculator`. Scenarios covered:
@@ -71,17 +77,12 @@ Responsible for abstracting the creation of driver instances depending on platfo
 Ensures a single instance of critical classes like configuration readers or driver managers.
 
 - **Examples**:
-  - [`PropertyManager.java`](./src/main/java/com/clarkewerton/utils/PropertyManager.java)
-  - [`DriverManager.java`](./src/main/java/com/clarkewerton/driver/DriverManager.java)
+  - [`DriverManager.java`](./src/main/java/com/clarkewerton/driver/manager/AndroidDriverManager.java)
 
 #### 4. Facade Design Pattern
 Simplifies complex UI interactions by exposing higher-level methods in the Page Object classes.
 
 - **Example**: [`CalculatorPage.java`](./src/main/java/com/clarkewerton/page_object/CalculatorPage.java)
-
-#### 5. Strategy Design Pattern *(prepared for future use)*
-While not fully implemented, the project structure supports adding this pattern to handle different execution strategies or platform-specific logic dynamically.
-
 
 ## 📁 Project Structure
 
