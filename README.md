@@ -92,6 +92,10 @@ To select between local and cloud execution.
 
 - **Example**: [`BaseTest.java`](./src/main/java/com/clarkewerton/test/BaseTest.java)
 
+#### 4. Configuration Files
+
+#### 5. Parallel Execution
+
 ## Project Structure
 
 ```
