@@ -4,12 +4,26 @@ This project demonstrates mobile automation testing using Java, Appium, TestNG, 
 
 The main goal of this project is to automate a suite of tests covering both positive and negative scenarios for the Google Calculator application.
 
-[![Cypress CI/CD](https://github.com/clark-ewerton/mobile-test-automation-lab/workflows/Appium CICD Test/badge.svg)](https://github.com/clark-ewerton/mobile-test-automation-lab/actions/workflows/cicd.yml)
+[![Appium CI/CD](https://github.com/clark-ewerton/mobile-test-automation-lab/workflows/Appium%20CICD%20Test/badge.svg)](https://github.com/clark-ewerton/mobile-test-automation-lab/actions/workflows/cicd.yml)
 [![Pages Status](https://img.shields.io/badge/GitHub%20Pages-Online-green)](https://clark-ewerton.github.io/mobile-test-automation-lab/)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 # ⭐ If you find this project useful, please consider giving it a star to help increase its visibility.
 ---
+
+# 📋 Table of Contents
+
+- [📱 Project Overview](#about-the-project)
+- [Technologies and Patterns Used](#technologies-and-patterns-used)
+- [Folder Structure](#folder-structure)
+- [Pre-requirements](#pre-requirements)
+- [Setup](#setup)
+- [Running the Tests](#running-the-tests)
+- [Test Reports](#test-reports)
+- [Running on GitHub Actions](#running-on-github-actions)
+- [Execution Observations](#execution-observations)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## 📱 Project Overview
 
@@ -131,6 +145,18 @@ mobile-test-automation-lab/
 └── README.md
 
 ```
+
+## 🧪 Test Execution Modes
+
+This project supports two modes of test execution:
+
+| Mode   | Environment | Parallel Execution | TestNG File           |
+|--------|-------------|--------------------|-----------------------|
+| Local  | Real devices connected via USB | Yes | testng-local.xml |
+| Cloud  | SauceLabs devices | No (Sequential) | testng-cloud.xml |
+
+When triggered by GitHub Actions, both test suites are executed: local tests run in parallel on two devices on Ubuntu, while cloud tests run sequentially on SauceLabs infrastructure.
+
 ---
 
 ## 🚀 How to Run Tests Locally (Windows)
