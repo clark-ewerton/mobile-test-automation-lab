@@ -8,6 +8,37 @@ This repository is a mobile test automation lab using Java, Appium, TestNG, Mave
 
 This project provides a complete and extensible structure to automate tests for Android applications. It includes local and remote (cloud) execution flows, automated report generation, and integration with GitHub Pages.
 
+### What'll be run?
+
+The idea was to create a suite of automated tests that covers some positive and negative scenarios of a `Google Calculator`. Scenarios covered:
+
+#### 📋 Test Scenarios Covered
+
+This project covers the following automated test scenarios on the Google Calculator:
+
+| Type       | Operation          | Inputs             | Expected Result                               |
+|------------|---------------------|--------------------|-----------------------------------------------|
+| Positive   | Add                 | 2, 3               | 5                                             |
+| Positive   | Add                 | 2, 3, 4            | 9                                             |
+| Positive   | Subtract            | 10, 3              | 7                                             |
+| Positive   | Multiply            | 3, 4               | 12                                            |
+| Positive   | Divide              | 10, 2              | 5                                             |
+| Positive   | Percentage          | 100, 10            | 10                                            |
+| Positive   | Subtract            | 3, 10              | -7                                            |
+| Positive   | Multiply            | 0, 10              | 0                                             |
+| Positive   | Divide              | 7, 2               | 3.5                                           |
+| Positive   | Add                 | -5, 3              | -2                                            |
+| Positive   | Multiply            | 2, 3, 4            | 24                                            |
+| Positive   | Percentage          | 0, 50              | 0                                             |
+| Positive   | Percentage          | -200, 10           | -20                                           |
+| Negative   | Divide              | 5, 0               | Can't divide by 0                             |
+| Negative   | Divide              | 0, 0               | Can't divide by 0                             |
+| Negative   | Invalid Operation   | 2, 2               | Invalid Operation                             |
+| Negative   | Add                 | (no inputs)        | Invalid Entry                                 |
+| Negative   | Subtract            | 5                  | Need at least two numbers to make operation   |
+| Negative   | Add                 | A, 5               | Invalid Entry                                 |
+
+
 ---
 
 ## 🔧 Technologies Used
@@ -22,47 +53,90 @@ This project provides a complete and extensible structure to automate tests for 
 
 ---
 
-## Design Patterns
-
 ## Design Patterns Used
 
 This project follows clean architecture principles and applies several design patterns to improve readability, maintainability, and scalability.
 
-### 1. Page Object Pattern
+#### 1. Page Object Pattern
 Encapsulates page structure and user interactions, promoting reusability and maintainability in UI tests.
 
 - **Example**: [`CalculatorPage.java`](./src/main/java/com/clarkewerton/page_object/CalculatorPage.java)
 
-### 2. Factory Design Pattern
+#### 2. Factory Design Pattern
 Responsible for abstracting the creation of driver instances depending on platform and configuration.
 
 - **Example**: [`DriverFactory.java`](./src/main/java/com/clarkewerton/driver/DriverFactory.java)
 
-### 3. Singleton Design Pattern
+#### 3. Singleton Design Pattern
 Ensures a single instance of critical classes like configuration readers or driver managers.
 
 - **Examples**:
   - [`PropertyManager.java`](./src/main/java/com/clarkewerton/utils/PropertyManager.java)
   - [`DriverManager.java`](./src/main/java/com/clarkewerton/driver/DriverManager.java)
 
-### 4. Facade Design Pattern
+#### 4. Facade Design Pattern
 Simplifies complex UI interactions by exposing higher-level methods in the Page Object classes.
 
 - **Example**: [`CalculatorPage.java`](./src/main/java/com/clarkewerton/page_object/CalculatorPage.java)
 
-### 5. Strategy Design Pattern *(prepared for future use)*
+#### 5. Strategy Design Pattern *(prepared for future use)*
 While not fully implemented, the project structure supports adding this pattern to handle different execution strategies or platform-specific logic dynamically.
 
 
 ## 📁 Project Structure
 
 ```
-mobile-test-automation-lab/ ├── .github/ # GitHub workflows (CI, actions) │ ├── app/ # APKs or app-related files │ ├── docs/ # Documentation and resources │ ├── reports/ # Generated reports (e.g., Allure) │ ├── screenshots/ # Screenshots captured during tests │ ├── src/ │ └── main/ │ └── java/ │ └── com/ │ └── clarkewerton/ │ ├── android/ # Test classes for Android app │ │ └── CalculatorTest.java │ │ │ ├── constants/ # Constants used across the project │ │ └── AppiumConfigConstants.java │ │ │ ├── devicefarm/ # LambdaTest support classes │ │ └── LambdaTestCapabilities.java │ │ │ ├── driver/ # Driver Factory and Driver Manager │ │ ├── DriverFactory.java │ │ └── DriverManager.java │ │ │ ├── enums/ # Enum definitions │ │ └── PlatformType.java │ │ │ ├── page_object/ # Page Object classes for UI interactions │ │ └── CalculatorPage.java │ │ │ ├── test/ # Base test setup │ │ └── BaseTest.java │ │ │ └── utils/ # Utility classes │ ├── CapabilitiesLoader.java │ └── PropertyManager.java │ ├── .gitignore ├── pom.xml # Maven configuration └── README.md
+mobile-test-automation-lab/
+├── .github/workflows/cicd.yml # GitHub workflows (CI, actions)
+├── app/googleCalculator.apk # APKs or app-related files
+├── target/allure-reports # Generated reports (e.g., Allure)
+├── src/
+│ │ └── main/
+│ │ │ └── java/
+│ │ │ |└── com/
+│ │ │ │ └── clarkewerton/
+│ │ │ │ │ │ └── config/
+│ │ │ │ │ │ │ │ ├── Configuration.java
+│ │ │ │ │ │ │ │ ├── ConfigurationManager.java
+│ │ │ │ │ │ └── driver/
+│ │ │ │ │ │ │ │ ├── DriverFactory.java
+│ │ │ │ │ │ │ │ ├── IDriver.java
+│ │ │ │ │ │ │ │ ├── Platform.java
+│ │ │ │ │ │ │ │ └── manager/
+│ │ │ │ │ │ │ │ │ │ ├── AndroidDriverManager.java
+│ │ │ │ │ │ │ │ │ │ ├── IOSDriverManager.java
+│ │ │ │ │ │ └── exception/
+│ │ │ │ │ │ │ │ ├── PlatformNotSupportedException.java
+│ │ │ │ │ │ └── locators/
+│ │ │ │ │ │ │ │ ├── AndroidLocators.java
+│ │ │ │ │ │ │ │ ├── IOSLocators.java
+│ │ │ │ │ │ └── page_object/
+│ │ │ │ │ │ │ │ ├── CalculatorPage.java
+│ │ │ │ │ │ └── test/
+│ │ │ │ │ │ │ │ ├── BaseTest.java
+│ │ │ └── resources/
+│ │ │ │ │ ├── log4j2.properties
+│ │ │ │ │ └── config/
+│ │ │ │ │ │ │── android.properties
+│ │ │ │ │ │ │── cloud.properties
+│ │ │ │ │ │ │── general.properties
+│ │ │ │ │ │ │── ios.properties
+│ │ │ └── test/
+│ │ │ |└── com/
+│ │ │ │ └── clarkewerton/
+│ │ │ │ │ │ └── android/ # Test classes for Android app
+│ ││ ││ ││ ││ │ ├── CalculatorTest.java
+│ │ │ └── resources/
+│ │ │ │ │ ├── testng-cloud.xml
+│ │ │ │ │ ├── testng-local.xml
+│ ├── .gitignore
+├── pom.xml # Maven configuration
+└── README.md
 
 ```
 ---
 
-## 🚀 How to Run Tests Locally
+## 🚀 How to Run Tests Locally (Windows)
 
 ### Prerequisites
 
@@ -82,36 +156,35 @@ cd mobile-test-automation-lab
 mvn install -DskipTests
 
 # Start Appium server
-chmod +x ./scripts/prepareAppiumServer.sh
-./scripts/prepareAppiumServer.sh
+appium
 
 # Start the emulator
-chmod +x ./scripts/start_emulator_2.sh
-./scripts/start_emulator_2.sh
+Please connect your android device into computer (don't forget to enable USB debbuging).
+Find your device id by running: adb devices
+Copy it
+Place it into testng-local.xml, find the line
+<parameter name="udid" value="emulator-5554"/>. Replace emulator-5554 by your id.
+
+If you want, please comment the second device block on testng-local file as it won't work tests locally parallely. Unless you emulate a second device via Android Emulator.
 
 # Upload APK to the device
-chmod +x ./scripts/uploadAPK.sh
-./scripts/uploadAPK.sh
+Please install Google Calculator into your Android device.
 
 # Run TestNG test suite
 mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-local.xml
-
-# (Optional) Kill emulators after test execution
-adb -s emulator-5554 emu kill || true
-adb -s emulator-5556 emu kill || true
 
 # View Allure report
 mvn allure:serve
 ```
 
 ## 🧪 GitHub Actions CI/CD
-The workflow file .github/workflows/appium-cicd-test.yml includes three jobs:
+The workflow file `.github/workflows/cicd.yml` includes three jobs:
 
-run-android-tests-remote: runs tests on a local emulator on GitHub-hosted runners.
+`run-android-tests-remote`: runs tests on a local emulator on GitHub-hosted runners using Ubuntu.
 
-run-android-tests-saucelabs: runs tests in Sauce Labs.
+`run-android-tests-saucelabs`: runs tests in Sauce Labs.
 
-deploy-report: generates an Allure report and publishes it to GitHub Pages.
+`deploy-report`: generates an Allure report and publishes it to GitHub Pages.
 
 Allure results are stored as artifacts and published after every execution, regardless of test results.
 
