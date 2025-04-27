@@ -2,6 +2,8 @@
  * MIT License
  *
  * Copyright (c) 2018 Elias Nogueira
+  * Modified by Clark Ewerton in 2025
+ * This file was adapted to test a calculator app using Appium and TestNG.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
