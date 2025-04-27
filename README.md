@@ -87,13 +87,7 @@ Responsible for abstracting the creation of driver instances depending on platfo
 
 - **Example**: [`DriverFactory.java`](./src/main/java/com/clarkewerton/driver/DriverFactory.java)
 
-#### 3. Singleton Design Pattern
-Ensures a single instance of critical classes like configuration readers or driver managers.
-
-- **Examples**:
-  - [`DriverManager.java`](./src/main/java/com/clarkewerton/driver/manager/AndroidDriverManager.java)
-
-#### 4. Strategy Design Pattern
+#### 3. Strategy Design Pattern
 To select between local and cloud execution.
 
 - **Example**: [`BaseTest.java`](./src/main/java/com/clarkewerton/test/BaseTest.java)
@@ -268,3 +262,6 @@ If you find this project useful, please consider giving it a star to help increa
 ## License
 This project is licensed under the MIT License.
 See the LICENSE file for more details.
+
+## Inspiration
+This project was inspired by this repo: https://github.com/eliasnogueira/appium-parallel-execution done by @eliasnogueira
