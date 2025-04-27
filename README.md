@@ -23,7 +23,7 @@ The main goal of this project is to automate a suite of tests covering both posi
 - [Running on GitHub Actions](#running-on-github-actions)
 - [Execution Observations](#execution-observations)
 - [Contributing](#contributing)
-- [📄 License](#license)
+- [License](#license)
 
 ## 📱 Project Overview
 
