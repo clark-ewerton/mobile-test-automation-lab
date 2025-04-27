@@ -13,19 +13,18 @@ The main goal of this project is to automate a suite of tests covering both posi
 
 # 📋 Table of Contents
 
-- [📱 Project Overview](#about-the-project)
-- [Technologies and Patterns Used](#technologies-and-patterns-used)
-- [Folder Structure](#folder-structure)
-- [Pre-requirements](#pre-requirements)
-- [Setup](#setup)
-- [Running the Tests](#running-the-tests)
-- [Test Reports](#test-reports)
-- [Running on GitHub Actions](#running-on-github-actions)
-- [Execution Observations](#execution-observations)
+- [Project Overview](#project-overview)
+- [Technologies Used](#technologies-used)
+- [Design Patterns Used](#design-patterns-used)
+- [Project Structure](#project-structure)
+- [Test Execution Modes](#test-execution-modes)
+- [How to Run Tests Locally](#how-to-run-tests-locally)
+- [GitHub Actions CI/CD](#github-actions-cicd)
+- [Allure reports](#allure-reports)
 - [Contributing](#contributing)
 - [License](#license)
 
-## 📱 Project Overview
+## Project Overview
 
 This project provides a complete and extensible structure to automate tests for Android applications. It includes local and remote (cloud) execution flows, automated report generation, and integration with GitHub Pages.
 
@@ -33,7 +32,7 @@ This project provides a complete and extensible structure to automate tests for 
 
 The idea was to create a suite of automated tests that covers some positive and negative scenarios of a `Google Calculator`. Scenarios covered:
 
-#### 📋 Test Scenarios Covered
+#### Test Scenarios Covered
 
 This project covers the following automated test scenarios on the Google Calculator:
 
@@ -62,7 +61,7 @@ This project covers the following automated test scenarios on the Google Calcula
 
 ---
 
-## 🔧 Technologies Used
+## Technologies Used
 
 - Java 17  
 - Maven  
@@ -99,7 +98,7 @@ To select between local and cloud execution.
 
 - **Example**: [`BaseTest.java`](./src/main/java/com/clarkewerton/test/BaseTest.java)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 mobile-test-automation-lab/
@@ -146,7 +145,7 @@ mobile-test-automation-lab/
 
 ```
 
-## 🧪 Test Execution Modes
+## Test Execution Modes
 
 This project supports two modes of test execution:
 
@@ -159,7 +158,7 @@ When triggered by GitHub Actions, both test suites are executed: local tests run
 
 ---
 
-## 🚀 How to Run Tests Locally (Windows)
+## How to Run Tests Locally
 
 ### Prerequisites
 
@@ -168,7 +167,7 @@ When triggered by GitHub Actions, both test suites are executed: local tests run
 - Android SDK and emulator configured  
 - Appium installed and running  
 
-### Steps to run it via real or Emulated devices
+### Steps to run it via real or Emulated devices (Windows)
 
 ```bash
 # Clone the repository
@@ -224,7 +223,7 @@ mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testng-cloud.xml
 mvn allure:serve
 ```
 
-## 🧪 GitHub Actions CI/CD
+## GitHub Actions CI/CD
 The workflow file `.github/workflows/cicd.yml` includes three jobs:
 
 `run-android-tests-remote`: runs tests on a local emulator on GitHub-hosted runners using Ubuntu.
@@ -253,19 +252,19 @@ graph TD
   D --> E[End]
 ```
 
-## 📊 Allure Reports
+## Allure Reports
 After every test execution, Allure reports are generated and published to:
 
 🔗 https://clark-ewerton.github.io/mobile-test-automation-lab
 
 - 🖼️ **Screenshots:** (only on failure)
 
-## 🌟 Contributing
+## Contributing
 Contributions are welcome!
 Feel free to open issues, fork the repository, and submit pull requests.
 
 If you find this project useful, please consider giving it a star to help increase its visibility.
 
-## 📄 License
+## License
 This project is licensed under the MIT License.
 See the LICENSE file for more details.
